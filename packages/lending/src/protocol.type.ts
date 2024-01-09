@@ -1,3 +1,4 @@
+import BigNumberJS from 'bignumber.js';
 import * as common from '@protocolink/common';
 
 export interface Market {
@@ -94,3 +95,13 @@ export interface RepayFields {
   borrower: string;
   balanceBps?: number;
 }
+
+export interface AdjustHealthRateInput {
+  leverageToken: common.Token;
+  deleverageToken: common.Token;
+  targetHealthRate: BigNumberJS.Value;
+}
+
+export type AdjustHealthRateOutput =
+  | { error: string }
+  | { operation: 'leverageLong' | 'deleverage'; srcToken: common.Token; srcAmount: string; destToken: common.Token };

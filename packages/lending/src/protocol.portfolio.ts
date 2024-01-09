@@ -1,4 +1,4 @@
-import { AssetInfo, BorrowObject, SupplyObject } from './protocol.type';
+import { AdjustHealthRateInput, AdjustHealthRateOutput, AssetInfo, BorrowObject, SupplyObject } from './protocol.type';
 import BigNumberJS from 'bignumber.js';
 import {
   abbreviateUSD,
@@ -342,36 +342,46 @@ export class Portfolio {
    *
    * @param leverageToken token which be deposited in leverage
    * @param deleverageToken token which be borrowed in leverage
-   * @param _targetHealthRate
+   * @param targetHealthRate
    */
-  adjustHealthRate(leverageToken: common.Token, deleverageToken: common.Token, _targetHealthRate: BigNumberJS.Value) {
-    let operation: 'leverageLong' | 'deleverage' | undefined = undefined;
-    const supplyLiquidationThreshold = new BigNumberJS(this.supplyMap[leverageToken.address]!.liquidationThreshold);
-    const targetHealthRate = new BigNumberJS(_targetHealthRate);
-    let amount = '0';
+  adjustHealthRate({
+    leverageToken,
+    deleverageToken,
+    targetHealthRate,
+  }: AdjustHealthRateInput): AdjustHealthRateOutput {
+    const supply = this.findSupply(leverageToken);
+    const borrow = this.findBorrow(deleverageToken);
+    if (!supply || !borrow) return { error: `non support token` };
 
-    if (this.totalBorrowUSD.isZero() || targetHealthRate.lt(this.healthRate)) {
-      if (this.totalCollateralUSD.isZero()) throw new Error(`can't leverage without collateral`);
+    let operation: 'leverageLong' | 'deleverage' = 'leverageLong';
+
+    const supplyLiquidationThreshold = new BigNumberJS(supply.liquidationThreshold);
+    const _targetHealthRate = new BigNumberJS(targetHealthRate);
+
+    let srcToken: common.Token, destToken: common.Token;
+    let srcAmount = '0';
+
+    if (this.totalCollateralUSD.isZero()) return { error: `can't leverage without collateral` };
+    if (this.totalBorrowUSD.isZero() || _targetHealthRate.lt(this.healthRate)) {
       operation = 'leverageLong';
+      [srcToken, destToken] = [leverageToken, deleverageToken];
+
       const supplyUSD = this.liquidationLimit
-        .minus(targetHealthRate.times(this.totalBorrowUSD))
-        .div(targetHealthRate.minus(supplyLiquidationThreshold));
-      amount = supplyUSD.div(this.supplyMap[leverageToken.address]!.price).toFixed(leverageToken.decimals, 1);
+        .minus(_targetHealthRate.times(this.totalBorrowUSD))
+        .div(_targetHealthRate.minus(supplyLiquidationThreshold));
+      srcAmount = supplyUSD.div(supply.price).toFixed(leverageToken.decimals, 1);
     } else {
       operation = 'deleverage';
+      [srcToken, destToken] = [deleverageToken, leverageToken];
+
       const withdrawUSD = this.liquidationLimit
-        .minus(targetHealthRate.times(this.totalBorrowUSD))
-        .div(supplyLiquidationThreshold.minus(_targetHealthRate));
+        .minus(_targetHealthRate.times(this.totalBorrowUSD))
+        .div(supplyLiquidationThreshold.minus(targetHealthRate));
       // repay token amount
-      amount = withdrawUSD.div(this.supplyMap[deleverageToken.address]!.price).toFixed(leverageToken.decimals, 1);
+      srcAmount = withdrawUSD.div(borrow.price).toFixed(deleverageToken.decimals, 1);
     }
 
-    return {
-      operation,
-      srcToken: operation === 'leverageLong' ? leverageToken : deleverageToken,
-      srcAmount: amount,
-      dstToken: operation === 'leverageLong' ? deleverageToken : leverageToken,
-    };
+    return { operation, srcToken, srcAmount, destToken };
   }
 
   supply(supply: Supply): void;
