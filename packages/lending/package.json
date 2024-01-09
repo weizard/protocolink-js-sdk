@@ -1,10 +1,10 @@
 {
-  "name": "@protocolink/lending",
+  "name": "@weizard/protocolink-lending",
   "version": "1.0.5",
   "description": "Protocolink Lending SDK",
   "repository": {
     "type": "git",
-    "url": "https://github.com/dinngo/protocolink-js-sdk.git",
+    "url": "https://github.com/weizard/protocolink-js-sdk.git",
     "directory": "packages/lending"
   },
   "license": "MIT",
