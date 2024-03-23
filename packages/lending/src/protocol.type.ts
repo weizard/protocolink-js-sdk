@@ -106,4 +106,9 @@ export interface AdjustHealthRateInput {
 
 export type AdjustHealthRateOutput =
   | { error: string }
-  | { operation: 'leverageLong' | 'deleverage'; srcToken: common.Token; srcAmount: string; destToken: common.Token };
+  | {
+      operation: 'leverageByCollateral' | 'deleverage';
+      srcToken: common.Token;
+      srcAmount: string;
+      destToken: common.Token;
+    };

@@ -357,7 +357,7 @@ export class Portfolio {
     const borrow = this.findBorrow(deleverageToken);
     if (!supply || !borrow) return { error: `non support token` };
 
-    let operation: 'leverageLong' | 'deleverage' = 'leverageLong';
+    let operation: 'leverageByCollateral' | 'deleverage' = 'leverageByCollateral';
 
     const supplyLiquidationThreshold = new BigNumberJS(supply.liquidationThreshold);
     const _targetHealthRate = new BigNumberJS(targetHealthRate);
@@ -367,7 +367,7 @@ export class Portfolio {
 
     if (this.totalCollateralUSD.isZero()) return { error: `can't leverage without collateral` };
     if (this.totalBorrowUSD.isZero() || _targetHealthRate.lt(this.healthRate)) {
-      operation = 'leverageLong';
+      operation = 'leverageByCollateral';
       [srcToken, destToken] = [leverageToken, deleverageToken];
 
       const supplyUSD = this.liquidationLimit
