@@ -32,15 +32,15 @@ export class LendingProtocol extends Protocol {
     return `${DISPLAY_NAME} ${id}`;
   }
 
-  canCollateralSwap(marketId: string, assetToken: common.Token) {
+  override canCollateralSwap(marketId: string, assetToken: common.Token) {
     return !assetToken.wrapped.is(getMarketConfig(this.chainId, marketId).baseToken);
   }
 
-  canDebtSwap() {
+  override canDebtSwap() {
     return false;
   }
 
-  canLeverageShort = false;
+  canLeverageByDebt = false;
 
   toUnderlyingToken(marketId: string) {
     const { baseToken } = getMarketConfig(this.chainId, marketId);

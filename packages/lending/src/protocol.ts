@@ -43,21 +43,37 @@ export abstract class Protocol extends common.Web3Toolkit {
     return true;
   }
 
-  canLeverage(_marketId: string, _assetToken: common.Token) {
+  canLeverageByCollateral(_marketId: string, _assetToken: common.Token) {
     return true;
   }
 
-  canLeverageShort = true;
+  canLeverageByDebt = true;
 
   canDeleverage(_marketId: string, _assetToken: common.Token) {
     return true;
   }
 
-  abstract toUnderlyingToken(marketId: string, protocolToken: common.Token): common.Token;
+  canOpenByCollateral(_marketId: string, _assetToken: common.Token) {
+    return this.canLeverageByCollateral(_marketId, _assetToken);
+  }
 
-  abstract toProtocolToken(marketId: string, underlyingToken: common.Token): common.Token;
+  canOpenByDebt = this.canLeverageByDebt;
 
-  abstract isProtocolToken(marketId: string, token: common.Token): boolean;
+  canClose(_marketId: string, _assetToken: common.Token) {
+    return this.canDeleverage(_marketId, _assetToken);
+  }
+
+  toUnderlyingToken(_marketId: string, _protocolToken: common.Token): common.Token | undefined {
+    return undefined;
+  }
+
+  toProtocolToken(_marketId: string, _underlyingToken: common.Token): common.Token | undefined {
+    return undefined;
+  }
+
+  isProtocolToken(_marketId: string, _token: common.Token) {
+    return false;
+  }
 
   isAssetTokenized(_marketId: string, _assetToken: common.Token) {
     return true;

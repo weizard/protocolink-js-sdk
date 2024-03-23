@@ -1,4 +1,13 @@
-import { arbitrumTokens, avalancheTokens, mainnetTokens, metisTokens, optimismTokens, polygonTokens } from './tokens';
+import {
+  arbitrumTokens,
+  avalancheTokens,
+  baseTokens,
+  gnosisTokens,
+  mainnetTokens,
+  metisTokens,
+  optimismTokens,
+  polygonTokens,
+} from './tokens';
 import * as common from '@protocolink/common';
 
 interface Config {
@@ -17,7 +26,7 @@ export const configs: Config[] = [
   },
   {
     chainId: common.ChainId.polygon,
-    primaryStablecoin: polygonTokens.USDC,
+    primaryStablecoin: polygonTokens['USDC.e'],
     secondaryStablecoin: polygonTokens.DAI,
     primaryNonstablecoin: polygonTokens.WETH,
   },
@@ -29,7 +38,7 @@ export const configs: Config[] = [
   },
   {
     chainId: common.ChainId.optimism,
-    primaryStablecoin: optimismTokens.USDC,
+    primaryStablecoin: optimismTokens['USDC.e'],
     secondaryStablecoin: optimismTokens.DAI,
     primaryNonstablecoin: optimismTokens.ETH,
   },
@@ -39,12 +48,23 @@ export const configs: Config[] = [
     secondaryStablecoin: avalancheTokens['DAI.e'],
     primaryNonstablecoin: avalancheTokens['WETH.e'],
   },
-
   {
     chainId: common.ChainId.metis,
     primaryStablecoin: metisTokens['m.USDC'],
     secondaryStablecoin: metisTokens['m.DAI'],
     primaryNonstablecoin: metisTokens.WETH,
+  },
+  {
+    chainId: common.ChainId.base,
+    primaryStablecoin: baseTokens.USDC,
+    secondaryStablecoin: baseTokens.USDbC,
+    primaryNonstablecoin: baseTokens.WETH,
+  },
+  {
+    chainId: common.ChainId.gnosis,
+    primaryStablecoin: gnosisTokens.WXDAI,
+    secondaryStablecoin: gnosisTokens.USDC,
+    primaryNonstablecoin: gnosisTokens.WETH,
   },
 ];
 
